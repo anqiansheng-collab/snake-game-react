@@ -550,51 +550,58 @@ h1 {
   padding: 24px 0;
 }
 
-/* 移动端触摸控制 */
+/* 移动端触摸控制 - 手势滑动 */
 .touch-controls {
   display: none;
   margin-top: 16px;
-  gap: 10px;
+  gap: 12px;
   flex-direction: column;
   align-items: center;
 }
 
-.dpad {
-  display: grid;
-  grid-template-columns: 64px 64px 64px;
-  grid-template-rows: 64px 64px 64px;
-  gap: 6px;
-}
-
-.dpad-btn {
-  width: 64px;
-  height: 64px;
-  border: 2px solid rgba(240, 230, 211, 0.25);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #f0e6d3;
-  font-size: 24px;
+.gesture-hint {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  transition: all 0.15s;
+  gap: 8px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px dashed rgba(240, 230, 211, 0.2);
+  border-radius: 16px;
+  animation: gesture-pulse 2s infinite;
 }
 
-.dpad-btn:active {
-  background: rgba(254, 202, 87, 0.15);
-  transform: scale(0.92);
-  border-color: rgba(254, 202, 87, 0.3);
+.gesture-icon {
+  font-size: 32px;
+  animation: swipe-hint 1.5s infinite;
 }
 
-.dpad-btn.up { grid-column: 2; grid-row: 1; }
-.dpad-btn.left { grid-column: 1; grid-row: 2; }
-.dpad-btn.center { grid-column: 2; grid-row: 2; background: rgba(255, 255, 255, 0.1); }
-.dpad-btn.right { grid-column: 3; grid-row: 2; }
-.dpad-btn.down { grid-column: 2; grid-row: 3; }
+.gesture-text {
+  font-size: 14px;
+  color: #a0b8c8;
+  font-family: 'ZCOOL KuaiLe', system-ui, sans-serif;
+}
+
+@keyframes gesture-pulse {
+  0%, 100% {
+    border-color: rgba(240, 230, 211, 0.15);
+  }
+  50% {
+    border-color: rgba(254, 202, 87, 0.3);
+  }
+}
+
+@keyframes swipe-hint {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
 
 .action-btns {
   display: flex;

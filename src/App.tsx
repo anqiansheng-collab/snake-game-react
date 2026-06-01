@@ -142,6 +142,8 @@ export default function App() {
   const gameLoopRef = useRef<number | null>(null)
   const fireworkIdRef = useRef(0)
   const particleIdRef = useRef(0)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const boardRef = useRef<HTMLDivElement>(null)
 
   const resetGame = useCallback(() => {
     setState(createInitialState(startLevel))
@@ -369,6 +371,32 @@ export default function App() {
     })
   }, [])
 
+  // 手势滑动控制
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }, [])
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return
+    const touch = e.changedTouches[0]
+    const dx = touch.clientX - touchStartRef.current.x
+    const dy = touch.clientY - touchStartRef.current.y
+    const minSwipeDistance = 30
+
+    if (Math.abs(dx) < minSwipeDistance && Math.abs(dy) < minSwipeDistance) {
+      touchStartRef.current = null
+      return
+    }
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      handleTouchDir(dx > 0 ? 1 : -1, 0)
+    } else {
+      handleTouchDir(0, dy > 0 ? 1 : -1)
+    }
+    touchStartRef.current = null
+  }, [handleTouchDir])
+
   const handleNextLevel = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -442,11 +470,14 @@ export default function App() {
         {state.paused && <span className="pause-indicator">暂停中</span>}
       </div>
       <div
+        ref={boardRef}
         className="board"
         style={{
           width: BOARD_SIZE * CELL_SIZE,
           height: BOARD_SIZE * CELL_SIZE,
         }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="grid-background" />
         {boardCells}
@@ -612,28 +643,9 @@ export default function App() {
         <button onClick={() => setShowRank(true)}>排行榜</button>
       </div>
       <div className="touch-controls">
-        <div className="dpad">
-          <button
-            className="dpad-btn up"
-            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(0, -1) }}
-            onClick={() => handleTouchDir(0, -1)}
-          >▲</button>
-          <button
-            className="dpad-btn left"
-            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(-1, 0) }}
-            onClick={() => handleTouchDir(-1, 0)}
-          >◀</button>
-          <div className="dpad-btn center">●</div>
-          <button
-            className="dpad-btn right"
-            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(1, 0) }}
-            onClick={() => handleTouchDir(1, 0)}
-          >▶</button>
-          <button
-            className="dpad-btn down"
-            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(0, 1) }}
-            onClick={() => handleTouchDir(0, 1)}
-          >▼</button>
+        <div className="gesture-hint">
+          <span className="gesture-icon">👆</span>
+          <span className="gesture-text">在屏幕上滑动控制方向</span>
         </div>
         <div className="action-btns">
           <button
