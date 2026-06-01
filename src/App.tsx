@@ -352,6 +352,23 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [askName, showRank])
 
+  const handleTouchDir = useCallback((dx: number, dy: number) => {
+    setState((prev) => {
+      if (prev.gameOver || !prev.started || prev.paused || prev.cleared) return prev
+      if (dx !== 0 && prev.direction.x !== 0) return prev
+      if (dy !== 0 && prev.direction.y !== 0) return prev
+      return { ...prev, nextDirection: { x: dx, y: dy } }
+    })
+  }, [])
+
+  const handleTouchPause = useCallback(() => {
+    setState((prev) => {
+      if (!prev.started) return { ...prev, started: true }
+      if (prev.cleared) return prev
+      return { ...prev, paused: !prev.paused }
+    })
+  }, [])
+
   const handleNextLevel = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -593,6 +610,40 @@ export default function App() {
           </button>
         )}
         <button onClick={() => setShowRank(true)}>排行榜</button>
+      </div>
+      <div className="touch-controls">
+        <div className="dpad">
+          <button
+            className="dpad-btn up"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(0, -1) }}
+            onClick={() => handleTouchDir(0, -1)}
+          >▲</button>
+          <button
+            className="dpad-btn left"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(-1, 0) }}
+            onClick={() => handleTouchDir(-1, 0)}
+          >◀</button>
+          <div className="dpad-btn center">●</div>
+          <button
+            className="dpad-btn right"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(1, 0) }}
+            onClick={() => handleTouchDir(1, 0)}
+          >▶</button>
+          <button
+            className="dpad-btn down"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchDir(0, 1) }}
+            onClick={() => handleTouchDir(0, 1)}
+          >▼</button>
+        </div>
+        <div className="action-btns">
+          <button
+            className="action-btn"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchPause() }}
+            onClick={handleTouchPause}
+          >
+            {state.paused ? '继续' : '暂停'}
+          </button>
+        </div>
       </div>
       <div className="instructions">
         <p>方向键 / WASD 控制移动 | 空格键 暂停/继续</p>
