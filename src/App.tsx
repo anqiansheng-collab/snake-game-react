@@ -486,9 +486,9 @@ export default function App() {
         {!state.started && !state.gameOver && (
           <div className="overlay">
             <div className="modal start-modal">
-              <h2>准备开始</h2>
-              <p>按空格键或方向键开始游戏</p>
-              <p>使用方向键或 WASD 控制</p>
+              <h2>选择关卡</h2>
+              <p>点击上方关卡开始游戏</p>
+              <p>使用方向键或 WASD 控制移动</p>
               <p>游戏中按空格键暂停/继续</p>
               <div className="level-select">
                 <p className="level-desc">选择起始关卡:</p>
@@ -500,7 +500,7 @@ export default function App() {
                       onClick={() => {
                         if (lv <= unlockedLevel) {
                           setStartLevel(lv)
-                          setState(createInitialState(lv))
+                          setState({ ...createInitialState(lv), started: true })
                         }
                       }}
                       disabled={lv > unlockedLevel}
@@ -515,7 +515,7 @@ export default function App() {
                     className={`level-btn infinite ${startLevel === 4 ? 'active' : ''}`}
                     onClick={() => {
                       setStartLevel(4)
-                      setState(() => ({ ...createInitialState(3), infiniteMode: true, level: 3 }))
+                      setState(() => ({ ...createInitialState(3), infiniteMode: true, level: 3, started: true }))
                     }}
                   >
                     无限模式
